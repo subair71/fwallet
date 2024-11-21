@@ -1,13 +1,15 @@
-const express = require('express');
 const bodyParser = require('body-parser');
-
-const app = express();
-const port = 3000;
-const { v4: uuidv4 } = require('uuid'); // Import the uuid library
-
 
 // Middleware for parsing JSON bodies
 app.use(bodyParser.json());
+
+const express = require('express');
+const { v4: uuidv4 } = require('uuid');
+const cors = require('cors'); // CORS middleware for cross-origin requests
+
+const app = express();
+app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cors())
 
 // Mock user data
 const users = [
