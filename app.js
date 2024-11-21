@@ -1,15 +1,12 @@
-const bodyParser = require('body-parser');
-
-// Middleware for parsing JSON bodies
-app.use(bodyParser.json());
-
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const cors = require('cors'); // CORS middleware for cross-origin requests
 
 const app = express();
+const port = 3000; // Define the port
+
 app.use(express.json()); // Middleware to parse JSON bodies
-app.use(cors())
+app.use(cors()); // Allow cross-origin requests (for Flutter app)
 
 // Mock user data
 const users = [
@@ -22,7 +19,6 @@ const users = [
     beneficiaryMax: 5,  // Maximum of 5 beneficiaries
     beneficiaries: [
       { benId: "ben001", name: "John Doe", nickname: "Johnny" },
-      
     ],
   },
   {
@@ -59,9 +55,11 @@ app.get('/getUserDetails/:id', (req, res) => {
   }
 });
 
+// API: Add Beneficiary
 app.post('/addBeneficiary', (req, res) => {
   const { userId, name, nickname } = req.body;
 
+  // Check if the required fields are provided
   if (!userId || !name || !nickname) {
     return res.status(400).json({
       success: false,
@@ -103,10 +101,6 @@ app.post('/addBeneficiary', (req, res) => {
     data: user.beneficiaries,
   });
 });
-
-
-
-
 
 // API: Perform top-up
 app.post('/performTopUp/:id', (req, res) => {
