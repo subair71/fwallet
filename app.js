@@ -104,6 +104,27 @@ app.post('/addBeneficiary', (req, res) => {
   });
 });
 
+// API: List Beneficiaries
+app.get('/listBeneficiaries/:id', (req, res) => {
+  const userId = req.params.id;
+
+  // Find user by ID
+  const user = users.find((u) => u.id === userId);
+
+  if (user) {
+    res.status(200).json({
+      success: true,
+      beneficiaries: user.beneficiaries,
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+});
+
+
 // API: Perform top-up
 app.post('/performTopUp/:id', (req, res) => {
   const userId = req.params.id; // User ID from the URL
