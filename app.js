@@ -57,9 +57,9 @@ app.get('/getUserDetails/:id', (req, res) => {
   }
 });
 
-app.post('/addBeneficiary/:id', (req, res) => {
-  const userId = req.params.id;
-  const { name, nickname } = req.body;
+
+app.post('/addBeneficiary', (req, res) => {
+  const { userId, name, nickname } = req.body;
 
   // Find user by ID
   const user = users.find((u) => u.id === userId);
@@ -96,26 +96,7 @@ app.post('/addBeneficiary/:id', (req, res) => {
 
 
 
-// API: List all beneficiaries (returns maximum 5 beneficiaries)
-app.get('/listBeneficiaries/:id', (req, res) => {
-  const userId = req.params.id;
 
-  // Find user by ID
-  const user = users.find((u) => u.id === userId);
-
-  if (user) {
-    const limitedBeneficiaries = user.beneficiaries.slice(0, 5); // Limit to 5 beneficiaries
-    res.status(200).json({
-      success: true,
-      data: limitedBeneficiaries,
-    });
-  } else {
-    res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
-  }
-});
 
 // API: Perform top-up
 app.post('/performTopUp/:id', (req, res) => {
