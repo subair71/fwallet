@@ -13,15 +13,12 @@ const users = [
     id: "user123",
     isVerified: true,
     monthlyLimitExceeded: false,
-    transactionFee: 5.0,
+    transactionFee: 3.0,
     balance: 1200.5,
     beneficiaryMax: 5,  // Maximum of 5 beneficiaries
     beneficiaries: [
       { benId: "ben001", name: "John Doe", nickname: "Johnny" },
-      { benId: "ben002", name: "Jane Smith", nickname: "Janie" },
-      { benId: "ben003", name: "Alice Johnson", nickname: "Ally" },
-      { benId: "ben004", name: "Bob Brown", nickname: "Bobby" },
-      { benId: "ben005", name: "Charlie Davis", nickname: "Chuck" }
+      
     ],
   },
   {
@@ -74,6 +71,7 @@ app.post('/addBeneficiary/:id', (req, res) => {
       });
     }
 
+    // Add beneficiary to the list
     user.beneficiaries.push({
       benId: beneficiaryId,
       name: name,
@@ -82,7 +80,7 @@ app.post('/addBeneficiary/:id', (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Beneficiary added successfully",
+      data: user.beneficiaries,
     });
   } else {
     res.status(404).json({
@@ -91,6 +89,7 @@ app.post('/addBeneficiary/:id', (req, res) => {
     });
   }
 });
+
 
 // API: List all beneficiaries (returns maximum 5 beneficiaries)
 app.get('/listBeneficiaries/:id', (req, res) => {
@@ -115,13 +114,14 @@ app.get('/listBeneficiaries/:id', (req, res) => {
 
 // API: Perform top-up
 app.post('/performTopUp/:id', (req, res) => {
-  const userId = req.params.id;
-  const { beneficiaryId, amount } = req.body;
+  const userId = req.params.id; // User ID from the URL
+  const { beneficiaryId, amount } = req.body; // Beneficiary ID and amount from the request body
 
   // Find user by ID
   const user = users.find((u) => u.id === userId);
 
   if (user) {
+    // Find the beneficiary within the user's beneficiaries list
     const beneficiary = user.beneficiaries.find((b) => b.benId === beneficiaryId);
 
     if (!beneficiary) {
@@ -131,6 +131,7 @@ app.post('/performTopUp/:id', (req, res) => {
       });
     }
 
+    // Check if the user has sufficient balance
     if (user.balance < amount) {
       return res.status(400).json({
         success: false,
@@ -138,10 +139,13 @@ app.post('/performTopUp/:id', (req, res) => {
       });
     }
 
-    // Deduct from user balance
+    // Deduct the amount from the user's balance
     user.balance -= amount;
 
-    // Add to beneficiary balance
+    // Add the amount to the beneficiary's balance
+    if (!beneficiary.balance) {
+      beneficiary.balance = 0; // Initialize balance if it doesn't exist
+    }
     beneficiary.balance += amount;
 
     res.status(200).json({
