@@ -5,6 +5,7 @@ const cors = require('cors'); // CORS middleware for cross-origin requests
 const app = express();
 const port = 3000; // Define the port
 
+// Middleware
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cors()); // Allow cross-origin requests (for Flutter app)
 
@@ -18,7 +19,7 @@ const users = [
     balance: 1200.5,
     beneficiaryMax: 5,  // Maximum of 5 beneficiaries
     beneficiaries: [
-      { benId: "ben001", name: "John Doe", nickname: "Johnny" },
+      { benId: "ben001", name: "John Doe", nickname: "Johnny", balance: 0 },
     ],
   },
   {
@@ -29,8 +30,8 @@ const users = [
     balance: 800.0,
     beneficiaryMax: 5,
     beneficiaries: [
-      { benId: "ben006", name: "Mike Jordan", nickname: "MJ" },
-      { benId: "ben007", name: "Sarah Lee", nickname: "Sally" }
+      { benId: "ben006", name: "Mike Jordan", nickname: "MJ", balance: 0 },
+      { benId: "ben007", name: "Sarah Lee", nickname: "Sally", balance: 0 }
     ],
   },
 ];
@@ -93,6 +94,7 @@ app.post('/addBeneficiary', (req, res) => {
     benId: beneficiaryId,
     name: name,
     nickname: nickname,
+    balance: 0,  // Initialize beneficiary balance
   });
 
   // Respond with the updated list of beneficiaries
@@ -133,9 +135,6 @@ app.post('/performTopUp/:id', (req, res) => {
     user.balance -= amount;
 
     // Add the amount to the beneficiary's balance
-    if (!beneficiary.balance) {
-      beneficiary.balance = 0; // Initialize balance if it doesn't exist
-    }
     beneficiary.balance += amount;
 
     res.status(200).json({
