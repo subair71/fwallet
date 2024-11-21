@@ -57,41 +57,49 @@ app.get('/getUserDetails/:id', (req, res) => {
   }
 });
 
-
 app.post('/addBeneficiary', (req, res) => {
   const { userId, name, nickname } = req.body;
 
-  // Find user by ID
-  const user = users.find((u) => u.id === userId);
-
-  if (user) {
-    if (user.beneficiaries.length >= user.beneficiaryMax) {
-      return res.status(400).json({
-        success: false,
-        message: "Maximum beneficiaries limit reached",
-      });
-    }
-
-    // Generate a unique beneficiary ID
-    const beneficiaryId = uuidv4();
-
-    // Add beneficiary to the list
-    user.beneficiaries.push({
-      benId: beneficiaryId,
-      name: name,
-      nickname: nickname,
-    });
-
-    res.status(200).json({
-      success: true,
-      data: user.beneficiaries,
-    });
-  } else {
-    res.status(404).json({
+  if (!userId || !name || !nickname) {
+    return res.status(400).json({
       success: false,
-      message: "User not found",
+      message: 'userId, name, and nickname are required',
     });
   }
+
+  // Find the user by ID
+  const user = users.find((u) => u.id === userId);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+
+  // Check if the user has reached the max number of beneficiaries
+  if (user.beneficiaries.length >= user.beneficiaryMax) {
+    return res.status(400).json({
+      success: false,
+      message: 'Maximum beneficiaries limit reached',
+    });
+  }
+
+  // Generate a unique beneficiary ID
+  const beneficiaryId = uuidv4();
+
+  // Add the new beneficiary to the user's list
+  user.beneficiaries.push({
+    benId: beneficiaryId,
+    name: name,
+    nickname: nickname,
+  });
+
+  // Respond with the updated list of beneficiaries
+  res.status(200).json({
+    success: true,
+    data: user.beneficiaries,
+  });
 });
 
 
