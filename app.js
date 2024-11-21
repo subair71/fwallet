@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
+const { v4: uuidv4 } = require('uuid'); // Import the uuid library
+
 
 // Middleware for parsing JSON bodies
 app.use(bodyParser.json());
@@ -55,10 +57,9 @@ app.get('/getUserDetails/:id', (req, res) => {
   }
 });
 
-// API: Add beneficiary
 app.post('/addBeneficiary/:id', (req, res) => {
   const userId = req.params.id;
-  const { beneficiaryId, name, nickname } = req.body;
+  const { name, nickname } = req.body;
 
   // Find user by ID
   const user = users.find((u) => u.id === userId);
@@ -70,6 +71,9 @@ app.post('/addBeneficiary/:id', (req, res) => {
         message: "Maximum beneficiaries limit reached",
       });
     }
+
+    // Generate a unique beneficiary ID
+    const beneficiaryId = uuidv4();
 
     // Add beneficiary to the list
     user.beneficiaries.push({
@@ -89,6 +93,7 @@ app.post('/addBeneficiary/:id', (req, res) => {
     });
   }
 });
+
 
 
 // API: List all beneficiaries (returns maximum 5 beneficiaries)
